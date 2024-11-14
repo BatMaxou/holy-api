@@ -9,3 +9,22 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+
+    App\Command\ScrapNewProductsCommand:
+        arguments:
+            # $scraper: '@App\Service\Scraping\Scraper'
+            $baseUrl: '%env(HOLY_URL)%'
+            $allProductsPath: '%env(HOLY_ALL_PRODUCTS_PATH)%'
+
+    App\Mock\Command\MockAllProductsPageCommand:
+        arguments:
+            $baseUrl: '%env(HOLY_URL)%'
+            $allProductsPath: '%env(HOLY_ALL_PRODUCTS_PATH)%'
+            $mockPath: '%env(MOCK_PATH)%'
+
+    App\Mock\Service\Scraping\ScraperMock:
+        arguments:
+            $mockPath: '%env(MOCK_PATH)%'
+
+# when@dev:
+#     App\Service\Scraping\Scraper: '@App\Mock\Service\Scraping\ScraperMock'
