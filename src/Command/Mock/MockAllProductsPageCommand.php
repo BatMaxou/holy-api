@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Mock;
 
 use App\Service\Crawling\ProductCrawler;
-use App\Service\Scraping\Mock\ScraperMock;
+use App\Service\Scraping\Scraper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:scrap:products',
-    description: 'Add new products from the website',
+    name: 'mock:scrap:products',
+    description: 'Mock html content of "all products" page',
 )]
-class ScrapNewProductsCommand extends Command
+class MockAllProductsPageCommand extends Command
 {
     public function __construct(
-        private readonly ScraperMock $scraper,
+        private readonly Scraper $scraper,
         private readonly ProductCrawler $productCrawler,
         private readonly string $baseUrl,
         private readonly string $allProductsPath,
@@ -27,12 +27,12 @@ class ScrapNewProductsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->productCrawler->setCurrentOutput($output);
-        $output->writeln('Scraping new products...');
+        $output->writeln('Mocking "all products" page:');
 
         $html = $this->scraper->scrap(sprintf('%s.%s', $this->baseUrl, $this->allProductsPath));
-        $infos = $this->productCrawler->collectAllProductInfos($html);
+        $this->productCrawler->writeMockedContent($html);
 
-        // implement DTO && conditionnal Entity / Uploader
+        $output->writeln('Done!');
 
         return Command::SUCCESS;
     }

@@ -10,8 +10,7 @@ class Scraper implements ScraperInterface
 {
     public function __construct(
         private readonly HttpClientInterface $client,
-    )
-    {
+    ) {
     }
 
     public function scrap(string $url): string
