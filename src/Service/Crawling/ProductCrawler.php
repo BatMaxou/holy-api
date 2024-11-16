@@ -2,6 +2,8 @@
 
 namespace App\Service\Crawling;
 
+use App\DTO\ScrapProductDTO;
+use App\DTO\ScrapProductRangeDTO;
 use App\Enum\ProductRange;
 use App\Service\File\Uploader;
 use Symfony\Component\DomCrawler\Crawler;
@@ -36,21 +38,24 @@ class ProductCrawler
         return $this;
     }
 
-    // DTO
-    public function collectAllProductInfos(string $html): array // @phpstan-ignore-line
+    /**
+     * @return ScrapProductRangeDTO[]
+     */
+    public function collectAllProductInfos(string $html): array
     {
         if (null === $this->currentOutput) {
             throw new \Exception('Command output not set');
         }
 
         $crawler = new Crawler($html);
-        $infos = $crawler->filter(Utils::PRODUCT_DIV_CLASS)->each($this->getInfosFromScrapedContent(...));
+
+        /** @var ScrapProductRangeDTO[] $infos */
+        $infos = $crawler->filter(Utils::PRODUCT_RANGE_CSS_SELECTOR)->each($this->getInfosFromScrapedContent(...));
 
         return $infos;
     }
 
-    // DTO
-    private function getInfosFromScrapedContent(Crawler $node): array // @phpstan-ignore-line
+    private function getInfosFromScrapedContent(Crawler $node): ScrapProductRangeDTO
     {
         $productRangeName = $node->filter('h3')->text();
         $productRangeGuessed = $this->productRangeGuesser->guess($productRangeName);
@@ -62,15 +67,13 @@ class ProductCrawler
         $this->currentOutput?->writeln(sprintf('Scraping %s...', $productRangeName));
         $items = $node->filter('.product-item')->each($this->getItemInfos(...));
 
-        return [
-            'name' => $productRangeName,
-            'directory' => $productRangeGuessed->value,
+        return ScrapProductRangeDTO::createFrom([
+            'productRange' => $productRangeGuessed,
             'items' => $items,
-        ];
+        ]);
     }
 
-    // DTO
-    private function getItemInfos(Crawler $node): array // @phpstan-ignore-line
+    private function getItemInfos(Crawler $node): ScrapProductDTO
     {
         $itemName = $this->getText($node, 'h4');
         $itemImageUrl = $this->getImageUrl($node);
@@ -81,16 +84,16 @@ class ProductCrawler
             $this->currentOutput?->writeln(sprintf('Error uploading image of %s: %s', $itemName, $e->getMessage()));
         }
 
-        return [
+        return ScrapProductDTO::createFrom([
             'name' => $itemName,
             ...(
                 null !== $this->currentExploredProductRange && in_array($this->currentExploredProductRange, ProductRange::getAllWithFlavour())
                 ? ['flavour' => $this->parseFlavour($this->getText($node, Utils::PRODUCT_FLAVOUR_CSS_SELECTOR))]
                 : []
             ),
-            'price' => $this->parsePrice($this->getText($node, '.price')),
-            'image' => $itemImageUrl,
-        ];
+            'price' => $this->parsePrice($this->getText($node, Utils::PRODUCT_PRICE_CSS_SELECTOR)),
+            'imageUrl' => $itemImageUrl,
+        ]);
     }
 
     public function applyMockPathPatern(string $productRangeName): string
@@ -149,7 +152,7 @@ class ProductCrawler
         }
 
         $crawler = new Crawler($html);
-        $crawler->filter(Utils::PRODUCT_DIV_CLASS)->each($this->fillMockHtmlTemplate(...));
+        $crawler->filter(Utils::PRODUCT_RANGE_CSS_SELECTOR)->each($this->fillMockHtmlTemplate(...));
     }
 
     private function fillMockHtmlTemplate(Crawler $node, int $i): void

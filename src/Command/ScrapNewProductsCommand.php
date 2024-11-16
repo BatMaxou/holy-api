@@ -32,7 +32,9 @@ class ScrapNewProductsCommand extends Command
         $html = $this->scraper->scrap(sprintf('%s.%s', $this->baseUrl, $this->allProductsPath));
         $infos = $this->productCrawler->collectAllProductInfos($html);
 
-        // implement DTO && conditionnal Entity / Uploader
+        foreach ($infos as $productRangeDTO) {
+            // conditionnal Entity / Uploader / Output
+        }
 
         return Command::SUCCESS;
     }
