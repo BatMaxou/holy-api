@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\DTO\ScrapProductDTO;
-use App\Enum\ProductRange;
+use App\Enum\ProductRangeEnum;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\DTO\Interface\DTOInterface;
@@ -30,8 +30,8 @@ class Product implements DTOLinkedEntityInterface
     #[ORM\Column(type: Types::TEXT)]
     private ?string $imageUrl = null;
 
-    #[ORM\Column(enumType: ProductRange::class)]
-    private ?ProductRange $productRange = null;
+    #[ORM\Column(enumType: ProductRangeEnum::class)]
+    private ?ProductRangeEnum $productRange = null;
 
     public function __construct()
     {
@@ -79,12 +79,12 @@ class Product implements DTOLinkedEntityInterface
         return $this;
     }
 
-    public function getProductRange(): ?ProductRange
+    public function getProductRange(): ?ProductRangeEnum
     {
         return $this->productRange;
     }
 
-    public function setProductRange(ProductRange $productRange): static
+    public function setProductRange(ProductRangeEnum $productRange): static
     {
         $this->productRange = $productRange;
 

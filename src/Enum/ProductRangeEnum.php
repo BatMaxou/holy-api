@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-enum ProductRange: string
+enum ProductRangeEnum: string
 {
     case DISCOVER_PACK = 'discover-pack';
     case ENERGY = 'energy';
@@ -17,7 +17,7 @@ enum ProductRange: string
     public static function getAll(): array
     {
         $productRanges = [];
-        foreach (ProductRange::cases() as $productRange) {
+        foreach (ProductRangeEnum::cases() as $productRange) {
             $productRanges[] = $productRange->value;
         }
 
@@ -30,9 +30,9 @@ enum ProductRange: string
     public static function getAllWithFlavour(): array
     {
         return [
-            ProductRange::ENERGY,
-            ProductRange::ICED_TEA,
-            ProductRange::HYDRATION,
+            ProductRangeEnum::ENERGY,
+            ProductRangeEnum::ICED_TEA,
+            ProductRangeEnum::HYDRATION,
         ];
     }
 }

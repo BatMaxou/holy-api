@@ -7,7 +7,7 @@ use App\Entity\Product;
 use App\Repository\ProductRepository;
 use App\Service\Crawling\ProductCrawler;
 use App\Service\File\Uploader;
-use App\Service\Scraping\Mock\ScraperMock;
+use App\Service\Scraping\Scraper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ScrapNewProductsCommand extends Command
 {
     public function __construct(
-        private readonly ScraperMock $scraper,
+        private readonly Scraper $scraper,
         private readonly ProductCrawler $productCrawler,
         private readonly ProductRepository $productRepository,
         private readonly Uploader $uploader,

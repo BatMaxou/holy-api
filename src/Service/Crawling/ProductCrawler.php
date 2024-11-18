@@ -4,7 +4,7 @@ namespace App\Service\Crawling;
 
 use App\DTO\ScrapProductDTO;
 use App\DTO\ScrapProductRangeDTO;
-use App\Enum\ProductRange;
+use App\Enum\ProductRangeEnum;
 use Symfony\Component\DomCrawler\Crawler;
 use App\Service\Guesser\ProductRangeGuesser;
 use App\Utils;
@@ -16,7 +16,7 @@ class ProductCrawler
 
     /**
      * @var array{
-     *  enum: ProductRange,
+     *  enum: ProductRangeEnum,
      *  webSiteName: string,
      * }
      */
@@ -85,7 +85,7 @@ class ProductCrawler
             'name' => $itemName,
             'productRange' => $this->currentExploredProductRange['enum'],
             ...(
-                in_array($this->currentExploredProductRange['enum'], ProductRange::getAllWithFlavour())
+                in_array($this->currentExploredProductRange['enum'], ProductRangeEnum::getAllWithFlavour())
                 ? ['flavour' => $this->parseFlavour($this->getText($node, Utils::PRODUCT_FLAVOUR_CSS_SELECTOR))]
                 : []
             ),
@@ -149,12 +149,12 @@ class ProductCrawler
 
         file_put_contents(
             $this->applyMockPathPatern(match ($i) {
-                0 => ProductRange::DISCOVER_PACK->value,
-                1 => ProductRange::ENERGY->value,
-                2 => ProductRange::ICED_TEA->value,
-                3 => ProductRange::HYDRATION->value,
-                4 => ProductRange::SHAKER->value,
-                5 => ProductRange::MERCH->value,
+                0 => ProductRangeEnum::DISCOVER_PACK->value,
+                1 => ProductRangeEnum::ENERGY->value,
+                2 => ProductRangeEnum::ICED_TEA->value,
+                3 => ProductRangeEnum::HYDRATION->value,
+                4 => ProductRangeEnum::SHAKER->value,
+                5 => ProductRangeEnum::MERCH->value,
                 default => 'default',
             }),
             str_replace('\n', '', $node->html())

@@ -2,17 +2,17 @@
 
 namespace App\Service\Guesser;
 
-use App\Enum\ProductRange;
+use App\Enum\ProductRangeEnum;
 
 class ProductRangeGuesser
 {
-    public function guess(string $compareFrom): ProductRange
+    public function guess(string $compareFrom): ProductRangeEnum
     {
-        $productRanges = ProductRange::getAll();
+        $productRanges = ProductRangeEnum::getAll();
 
         $closest = $this->searchClosest($productRanges, $compareFrom);
 
-        return ProductRange::from($closest);
+        return ProductRangeEnum::from($closest);
     }
 
     /**

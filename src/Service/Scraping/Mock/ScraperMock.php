@@ -2,7 +2,7 @@
 
 namespace App\Service\Scraping\Mock;
 
-use App\Enum\ProductRange;
+use App\Enum\ProductRangeEnum;
 use App\Service\Scraping\Interface\ScraperInterface;
 
 class ScraperMock implements ScraperInterface
@@ -17,23 +17,23 @@ class ScraperMock implements ScraperInterface
     public function scrap(string $url): string
     {
         $html = '<body>';
-        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRange::DISCOVER_PACK));
-        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRange::ENERGY));
-        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRange::ICED_TEA));
-        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRange::HYDRATION));
-        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRange::SHAKER));
-        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRange::MERCH));
+        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::DISCOVER_PACK));
+        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::ENERGY));
+        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::ICED_TEA));
+        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::HYDRATION));
+        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::SHAKER));
+        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::MERCH));
         $html .= '</body>';
 
         return $html;
     }
 
-    private function getMockedContent(ProductRange $ProductRange): string
+    private function getMockedContent(ProductRangeEnum $productRange): string
     {
         return file_get_contents(sprintf(
             '%s/%s.html',
             $this->mockPath,
-            $ProductRange->value,
+            $productRange->value,
         )) ?: '';
     }
 

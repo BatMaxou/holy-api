@@ -2,23 +2,23 @@
 
 namespace App\Repository;
 
-use App\Entity\Product;
+use App\Entity\WeekScrap;
 use App\Repository\Trait\BasicRepositoryActionTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Product>
+ * @extends ServiceEntityRepository<WeekScrap>
  */
-class ProductRepository extends ServiceEntityRepository
+class WeekScrapRepository extends ServiceEntityRepository
 {
     /**
-     * @use BasicRepositoryActionTrait<Product>
+     * @use BasicRepositoryActionTrait<WeekScrap>
      */
     use BasicRepositoryActionTrait;
 
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Product::class);
+        parent::__construct($registry, WeekScrap::class);
     }
 }

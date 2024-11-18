@@ -31,3 +31,11 @@ purge-uploads:
 		uploads/merch/* \
 		uploads/shaker/*
 .phony: purge-uploads
+
+launch-consumer:
+	@$(php) bin/console messenger:consume scheduler_weekScrap
+.phony: consume-messages
+
+stop-consumer:
+	@$(php) bin/console messenger:stop-workers
+.phony: stop-consumer
