@@ -26,8 +26,8 @@ class Uploader
         return $this->currentDirectory;
     }
 
-    public function setCurrentDirectory(string $currentDirectory): void
+    public function setCurrentDirectory(?string $currentDirectory): void
     {
-        $this->currentDirectory = $currentDirectory;
+        $this->currentDirectory = null === $currentDirectory ? '' : sprintf('/%s', $currentDirectory);
     }
 }

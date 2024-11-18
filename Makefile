@@ -15,6 +15,13 @@ create-uploads-directories:
 		uploads/shaker
 .phony: create-uploads-directories
 
+purge: purge-mock-templates purge-uploads
+.phony: purge
+
+purge-mock-templates:
+	@rm -rf mock/*
+.phony: purge-mock-templates
+
 purge-uploads:
 	@rm -rf \
 		uploads/discover-pack/* \

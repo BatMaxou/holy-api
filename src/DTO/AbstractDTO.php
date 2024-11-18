@@ -2,9 +2,10 @@
 
 namespace App\DTO;
 
+use App\DTO\Interface\DTOInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-abstract class AbstractDTO
+abstract class AbstractDTO implements DTOInterface
 {
     /**
      * @var array<class-string, OptionsResolver>

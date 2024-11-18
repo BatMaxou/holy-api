@@ -12,6 +12,7 @@ class ScrapProductRangeDTO extends AbstractDTO
      */
     public function __construct(
         public ProductRange $productRange,
+        public string $webSiteName,
         public array $items,
     ) {
     }
@@ -20,6 +21,7 @@ class ScrapProductRangeDTO extends AbstractDTO
     {
         return $resolver
             ->setRequired('productRange')->setAllowedTypes('productRange', ProductRange::class)
+            ->setRequired('webSiteName')->setAllowedTypes('webSiteName', 'string')
             ->setRequired('items')->setAllowedTypes('items', 'array')
         ;
     }
