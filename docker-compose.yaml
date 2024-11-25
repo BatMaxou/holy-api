@@ -8,12 +8,16 @@ services:
       # MYSQL_DATABASE: ${DB_NAME}
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - holy
   
   php:
     build:
       context: .boing/docker/php
     volumes:
       - .:/srv
+    networks:
+      - holy
 
   web:
     depends_on:
@@ -22,6 +26,11 @@ services:
       context: .boing/docker/nginx/symfony
     volumes:
       - ./public:/srv/public
+    networks:
+      - holy
 
 volumes:
   db_data:
+
+networks:
+  holy:
