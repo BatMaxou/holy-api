@@ -21,4 +21,14 @@ class WeekScrapRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, WeekScrap::class);
     }
+
+    public function findLast(): ?WeekScrap
+    {
+        return $this->createQueryBuilder('w') // @phpstan-ignore return.type
+            ->orderBy('w.date', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 }

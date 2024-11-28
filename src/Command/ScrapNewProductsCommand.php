@@ -4,7 +4,9 @@ namespace App\Command;
 
 use App\Entity\Flavour;
 use App\Entity\Product;
+use App\Entity\WeekScrap;
 use App\Repository\ProductRepository;
+use App\Repository\WeekScrapRepository;
 use App\Service\Crawling\ProductCrawler;
 use App\Service\File\Uploader;
 use App\Service\Scraping\Scraper;
@@ -23,6 +25,7 @@ class ScrapNewProductsCommand extends Command
         private readonly Scraper $scraper,
         private readonly ProductCrawler $productCrawler,
         private readonly ProductRepository $productRepository,
+        private readonly WeekScrapRepository $weekScrapRepository,
         private readonly Uploader $uploader,
         private readonly string $baseUrl,
         private readonly string $allProductsPath,
@@ -32,6 +35,9 @@ class ScrapNewProductsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $weekScrap = $this->getAssociatedWeekScrap();
+        $productAdded = 0;
+
         $this->productCrawler->setCurrentOutput($output);
         $output->writeln('Scraping new products...');
 
@@ -59,7 +65,12 @@ class ScrapNewProductsCommand extends Command
                 }
 
                 $this->productRepository->save($newProduct, false);
+                ++$productAdded;
             }
+        }
+
+        if (null !== $weekScrap) {
+            $this->weekScrapRepository->save($weekScrap->setProductAdded($productAdded));
         }
 
         $this->productRepository->save();
@@ -85,5 +96,22 @@ class ScrapNewProductsCommand extends Command
         $output->writeln(sprintf('Uploading image of %s...', $formattedName));
 
         return $this->uploader->uploadFile($formattedName, $imageUrl);
+    }
+
+    private function getAssociatedWeekScrap(): ?WeekScrap
+    {
+        $weekScrap = $this->weekScrapRepository->findLast();
+
+        if (null === $weekScrap) {
+            throw new \Exception('Current Scrap not found');
+        }
+
+        $interval = date_diff($weekScrap->getDate(), new \DateTime());
+        $interval = (new \DateTime())->setTimestamp(0)->add($interval)->getTimestamp() / 60;
+        if ($interval > 2) {
+            return null;
+        }
+
+        return $weekScrap;
     }
 }
