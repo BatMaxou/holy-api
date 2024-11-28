@@ -4,8 +4,11 @@ namespace App\Command;
 
 use App\Entity\Flavour;
 use App\Entity\Product;
+use App\Entity\RankedProduct;
 use App\Entity\WeekScrap;
 use App\Repository\ProductRepository;
+use App\Repository\RankedProductRepository;
+use App\Repository\TierListRepository;
 use App\Repository\WeekScrapRepository;
 use App\Service\Crawling\ProductCrawler;
 use App\Service\File\Uploader;
@@ -25,6 +28,8 @@ class ScrapNewProductsCommand extends Command
         private readonly Scraper $scraper,
         private readonly ProductCrawler $productCrawler,
         private readonly ProductRepository $productRepository,
+        private readonly TierListRepository $tierListRepository,
+        private readonly RankedProductRepository $rankedProductRepository,
         private readonly WeekScrapRepository $weekScrapRepository,
         private readonly Uploader $uploader,
         private readonly string $baseUrl,
@@ -35,6 +40,7 @@ class ScrapNewProductsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $tierLists = $this->tierListRepository->findAll();
         $weekScrap = $this->getAssociatedWeekScrap();
         $productAdded = 0;
 
@@ -66,6 +72,14 @@ class ScrapNewProductsCommand extends Command
 
                 $this->productRepository->save($newProduct, false);
                 ++$productAdded;
+
+                if (!$isNewFlavour) {
+                    continue;
+                }
+
+                foreach ($tierLists as $tierList) {
+                    $this->rankedProductRepository->save(new RankedProduct($tierList, $newProduct), false);
+                }
             }
         }
 
