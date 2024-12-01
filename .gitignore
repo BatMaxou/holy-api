@@ -22,7 +22,7 @@
 ###< mock ###
 
 ###> files ###
-/uploads/
+/public/uploads/
 ###< files ###
 
 ###> friendsofphp/php-cs-fixer ###

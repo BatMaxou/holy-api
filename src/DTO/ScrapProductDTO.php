@@ -8,13 +8,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ScrapProductDTO extends AbstractDTO implements DTOInterface
 {
+    public string $imageUrl;
+
     public function __construct(
         public string $name,
         public ProductRangeEnum $productRange,
         public string $price,
-        public string $imageUrl,
+        public string $originalImageUrl,
         public ?string $flavour = null
     ) {
+        $this->imageUrl = $originalImageUrl;
     }
 
     public static function configureResolver(OptionsResolver $resolver): OptionsResolver
@@ -23,7 +26,7 @@ class ScrapProductDTO extends AbstractDTO implements DTOInterface
             ->setRequired('name')->setAllowedTypes('name', 'string')
             ->setRequired('productRange')->setAllowedTypes('productRange', ProductRangeEnum::class)
             ->setRequired('price')->setAllowedTypes('price', 'int')
-            ->setRequired('imageUrl')->setAllowedTypes('imageUrl', 'string')
+            ->setRequired('originalImageUrl')->setAllowedTypes('originalImageUrl', 'string')
             ->setDefined('flavour')->setAllowedTypes('flavour', ['string', 'null'])
         ;
     }

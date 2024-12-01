@@ -7,12 +7,12 @@ create-directories: create-uploads-directories
 
 create-uploads-directories:
 	@mkdir -p \
-		uploads/discover-pack \
-		uploads/energy \
-		uploads/hydration \
-		uploads/iced-tea \
-		uploads/merch \
-		uploads/shaker
+		public/uploads/discover-pack \
+		public/uploads/energy \
+		public/uploads/hydration \
+		public/uploads/iced-tea \
+		public/uploads/merch \
+		public/uploads/shaker
 .phony: create-uploads-directories
 
 purge: purge-mock-templates purge-uploads
@@ -24,12 +24,12 @@ purge-mock-templates:
 
 purge-uploads:
 	@rm -rf \
-		uploads/discover-pack/* \
-		uploads/energy/* \
-		uploads/hydration/* \
-		uploads/iced-tea/* \
-		uploads/merch/* \
-		uploads/shaker/*
+		public/uploads/discover-pack/* \
+		public/uploads/energy/* \
+		public/uploads/hydration/* \
+		public/uploads/iced-tea/* \
+		public/uploads/merch/* \
+		public/uploads/shaker/*
 .phony: purge-uploads
 
 launch-consumer:
@@ -39,3 +39,12 @@ launch-consumer:
 stop-consumer:
 	@$(php) bin/console messenger:stop-workers
 .phony: stop-consumer
+
+deploy:
+	@git pull
+	@$(php) composer install
+	@$(php) bin/console doctrine:migrations:migrate --no-interaction
+	@$(php) bin/console cache:clear
+	@make stop-consumer
+	@make launch-consumer
+.PHONY: deploy
