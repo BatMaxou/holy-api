@@ -90,7 +90,7 @@ class ProductCrawler
                 : []
             ),
             'price' => $this->parsePrice($this->getText($node, Utils::PRODUCT_PRICE_CSS_SELECTOR)),
-            'imageUrl' => $itemImageUrl,
+            'originalImageUrl' => $itemImageUrl,
         ]);
     }
 

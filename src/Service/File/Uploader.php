@@ -4,7 +4,7 @@ namespace App\Service\File;
 
 class Uploader
 {
-    private const UPLOAD_PATERN = 'uploads{{directory}}/{{name}}.png';
+    private const UPLOAD_PATERN = 'public/uploads{{directory}}/{{name}}.png';
 
     private string $currentDirectory;
 
@@ -13,12 +13,16 @@ class Uploader
         $this->currentDirectory = '';
     }
 
-    public function uploadFile(string $name, string $imageUrl): bool
+    public function uploadFile(string $name, string $imageUrl): ?string
     {
         $path = str_replace('{{directory}}', $this->currentDirectory, self::UPLOAD_PATERN);
         $path = str_replace('{{name}}', $name, $path);
 
-        return copy($imageUrl, $path);
+        if (copy($imageUrl, $path)) {
+            return $path;
+        } else {
+            return null;
+        }
     }
 
     public function getCurrentDirectory(): string

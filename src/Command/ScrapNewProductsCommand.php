@@ -60,15 +60,18 @@ class ScrapNewProductsCommand extends Command
                 }
 
                 $output->writeln(sprintf('New product detected: %s', $productDTO->name));
-                $isNewFlavour = null !== $productDTO->flavour;
-
-                $newProduct = $isNewFlavour ? Flavour::createFromDTO($productDTO) : Product::createFromDTO($productDTO);
 
                 try {
-                    $this->uploadImage($productDTO->name, $productDTO->imageUrl, $output);
+                    $localUrl = $this->uploadImage($productDTO->name, $productDTO->originalImageUrl, $output);
+                    if (null !== $localUrl) {
+                        $productDTO->imageUrl = $localUrl;
+                    }
                 } catch (\Exception $e) {
                     $output->writeln(sprintf('Error uploading image of %s: %s', $productDTO->name, $e->getMessage()));
                 }
+
+                $isNewFlavour = null !== $productDTO->flavour;
+                $newProduct = $isNewFlavour ? Flavour::createFromDTO($productDTO) : Product::createFromDTO($productDTO);
 
                 $this->productRepository->save($newProduct, false);
                 ++$productAdded;
@@ -92,7 +95,7 @@ class ScrapNewProductsCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function uploadImage(string $name, string $imageUrl, OutputInterface $output): bool
+    private function uploadImage(string $name, string $imageUrl, OutputInterface $output): ?string
     {
         $formattedName = strtolower($name);
         $formattedName = str_replace([' ', "'"], '_', $formattedName);
