@@ -42,7 +42,7 @@ stop-consumer:
 
 deploy:
 	@git pull
-	@composer install
+	@$(php) composer install
 	@$(php) bin/console doctrine:migrations:migrate --no-interaction
 	@$(php) bin/console cache:clear
 	@make stop-consumer
