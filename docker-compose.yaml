@@ -16,6 +16,17 @@ services:
       - .:/srv
     networks:
       - holy
+  
+  consumer:
+    depends_on:
+      - php
+    build:
+      context: .boing/docker/php
+    command: php bin/console messenger:consume scheduler_weekScrap
+    volumes:
+      - .:/srv
+    networks:
+      - holy
 
   web:
     depends_on:
