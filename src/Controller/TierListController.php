@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\RankedProduct;
 use App\Enum\HolyTierEnum;
 use App\Repository\RankedProductRepository;
 use App\Repository\TierListRepository;
+use App\Service\Sorting\RankedProductOrderModifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,13 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api')]
 class TierListController extends AbstractController
 {
-    #[Route('/tiers', name: 'tiers')]
-    public function tiers(): JsonResponse
-    {
-        return new JsonResponse(HolyTierEnum::getOrdered());
-    }
-
-    #[Route('/tier-list', name: 'tier_list')]
+    #[Route('/tier-list/products', name: 'tier_list')]
     public function tierList(
         TierListRepository $tierListRepository,
         RankedProductRepository $rankedProductRepository,
@@ -31,14 +27,12 @@ class TierListController extends AbstractController
 
         $linkedRankedProducts = $rankedProductRepository->findByTierList($tierList);
 
-        return new JsonResponse([
-            'tierListId' => $tierList->getId(),
-            'products' => array_map(fn ($linkedRankedProduct) => [
-                'id' => $linkedRankedProduct->getProduct()->getId(),
-                'tier' => $linkedRankedProduct->getTier(),
-                'imageUrl' => $linkedRankedProduct->getProduct()->getImageUrl(),
-            ], $linkedRankedProducts),
-        ]);
+        return new JsonResponse(array_map(fn ($linkedRankedProduct) => [
+            'id' => $linkedRankedProduct->getId(),
+            'tier' => $linkedRankedProduct->getTier(),
+            'order' => $linkedRankedProduct->getOrderNumber(),
+            'imageUrl' => $linkedRankedProduct->getProduct()->getImageUrl(),
+        ], $linkedRankedProducts));
     }
 
     #[Route('/tier-list/products/{id}', name: 'tier_list_products', methods: ['PATCH'])]
@@ -46,16 +40,24 @@ class TierListController extends AbstractController
         string $id,
         Request $request,
         RankedProductRepository $rankedProductRepository,
+        RankedProductOrderModifier $rankedProductOrderModifier,
     ): JsonResponse {
         $rankedProduct = $rankedProductRepository->find($id);
-        if (null === $rankedProduct) {
+        if (!$rankedProduct instanceof RankedProduct) {
             throw new \Exception('Ranked Product not found');
         }
 
         $data = json_decode($request->getContent(), true);
+        if (!is_array($data)) {
+            throw new \Exception('Invalid data');
+        }
 
-        if (!is_array($data) || !isset($data['tier']) || !is_string($data['tier'])) {
+        if (!isset($data['tier']) || !is_string($data['tier'])) {
             throw new \Exception('Invalid tier');
+        }
+
+        if (!isset($data['order']) || !is_int($data['order'])) {
+            throw new \Exception('Invalid order');
         }
 
         $tier = HolyTierEnum::tryFrom($data['tier']);
@@ -63,12 +65,40 @@ class TierListController extends AbstractController
             throw new \Exception('Invalid tier');
         }
 
+        $order = $data['order'];
+        if ($order <= 0) {
+            throw new \Exception('Invalid order');
+        }
+
+        $oldTier = $rankedProduct->getTier();
+        $oldOrder = $rankedProduct->getOrderNumber();
+
+        if ($oldTier === $tier && $oldOrder === $order) {
+            return new JsonResponse([
+                'id' => $rankedProduct->getId(),
+                'tier' => $rankedProduct->getTier(),
+                'order' => $rankedProduct->getOrderNumber(),
+                'imageUrl' => $rankedProduct->getProduct()->getImageUrl(),
+            ]);
+        }
+
+        if ($oldTier === $tier) {
+            $rankedProductOrderModifier->modifyBetween($rankedProduct->getTierList(), $tier, $rankedProduct, $oldOrder, $order);
+        } else {
+            if (null !== $oldOrder) {
+                $rankedProductOrderModifier->pop($rankedProduct->getTierList(), $oldTier, $rankedProduct, $oldOrder);
+            }
+            $rankedProductOrderModifier->insert($rankedProduct->getTierList(), $tier, $rankedProduct, $order);
+        }
+
         $rankedProduct->setTier($tier);
+        $rankedProduct->setOrderNumber($order);
         $rankedProductRepository->save();
 
         return new JsonResponse([
             'id' => $rankedProduct->getId(),
             'tier' => $rankedProduct->getTier(),
+            'order' => $rankedProduct->getOrderNumber(),
             'imageUrl' => $rankedProduct->getProduct()->getImageUrl(),
         ]);
     }
