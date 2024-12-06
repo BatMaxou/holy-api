@@ -22,8 +22,11 @@ class RankedProduct
     #[ORM\JoinColumn(nullable: false)]
     private Product $product;
 
-    #[ORM\Column(enumType: HolyTierEnum::class, nullable: true)]
-    private ?HolyTierEnum $tier = null;
+    #[ORM\Column(enumType: HolyTierEnum::class)]
+    private HolyTierEnum $tier;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $orderNumber = null;
 
     public function __construct(
         TierList $tierList,
@@ -32,6 +35,7 @@ class RankedProduct
         $this->id = Uuid::v4();
         $this->product = $product;
         $this->tierList = $tierList;
+        $this->tier = HolyTierEnum::UNRANKED;
     }
 
     public function getId(): string
@@ -63,7 +67,7 @@ class RankedProduct
         return $this;
     }
 
-    public function getTier(): ?HolyTierEnum
+    public function getTier(): HolyTierEnum
     {
         return $this->tier;
     }
@@ -71,6 +75,18 @@ class RankedProduct
     public function setTier(HolyTierEnum $tier): static
     {
         $this->tier = $tier;
+
+        return $this;
+    }
+
+    public function getOrderNumber(): ?int
+    {
+        return $this->orderNumber;
+    }
+
+    public function setOrderNumber(int $orderNumber): static
+    {
+        $this->orderNumber = $orderNumber;
 
         return $this;
     }

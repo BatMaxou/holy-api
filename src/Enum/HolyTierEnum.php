@@ -9,18 +9,25 @@ enum HolyTierEnum: string
     case B = 'holystique';
     case C = 'holymite';
     case D = 'holymonde';
+    case UNRANKED = 'unranked';
 
     /**
-     * @return array<self>
+     * @return array{
+     *  ranks: self[],
+     *  default: self
+     * }
      */
     public static function getOrdered(): array
     {
         return [
-            self::S,
-            self::A,
-            self::B,
-            self::C,
-            self::D,
+            'ranks' => [
+                self::S,
+                self::A,
+                self::B,
+                self::C,
+                self::D,
+            ],
+            'default' => self::UNRANKED,
         ];
     }
 }

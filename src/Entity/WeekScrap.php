@@ -15,7 +15,7 @@ class WeekScrap
     #[ORM\Column(length: 255)]
     private string $id;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, options: ['default' => '0000-00-00'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, options: ['default' => '0000-00-00 00:00:00'])]
     private \DateTimeImmutable $date;
 
     #[ORM\Column(options: ['default' => 0])]
