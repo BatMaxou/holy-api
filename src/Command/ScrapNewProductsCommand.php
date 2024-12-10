@@ -42,7 +42,7 @@ class ScrapNewProductsCommand extends Command
     {
         $tierLists = $this->tierListRepository->findAll();
         $weekScrap = $this->getAssociatedWeekScrap();
-        $productAdded = 0;
+        $productAdded = [];
 
         $this->productCrawler->setCurrentOutput($output);
         $output->writeln('Scraping new products...');
@@ -74,7 +74,7 @@ class ScrapNewProductsCommand extends Command
                 $newProduct = $isNewFlavour ? Flavour::createFromDTO($productDTO) : Product::createFromDTO($productDTO);
 
                 $this->productRepository->save($newProduct, false);
-                ++$productAdded;
+                $productAdded[] = $newProduct->getName();
 
                 if (!$isNewFlavour) {
                     continue;
@@ -87,7 +87,10 @@ class ScrapNewProductsCommand extends Command
         }
 
         if (null !== $weekScrap) {
-            $this->weekScrapRepository->save($weekScrap->setProductAdded($productAdded));
+            $weekScrap
+                ->setDetails($productAdded)
+                ->setProductAdded(count($productAdded));
+            $this->weekScrapRepository->save($weekScrap);
         }
 
         $this->productRepository->save();
