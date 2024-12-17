@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Service\Builder\TierListBuilder;
+use App\Service\Factory\TierListFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class InitializeTierList extends Command
 {
     public function __construct(
-        private readonly TierListBuilder $tierListBuilder,
+        private readonly TierListFactory $tierListFactory,
     ) {
         parent::__construct();
     }
@@ -23,7 +23,7 @@ class InitializeTierList extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Initializing Tier List...');
-        $this->tierListBuilder->build();
+        $this->tierListFactory->create();
         $output->writeln('Tier List initialized');
 
         return Command::SUCCESS;

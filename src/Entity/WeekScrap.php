@@ -2,18 +2,18 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\UuidTrait;
 use App\Enum\WeekScrapStatusEnum;
 use App\Repository\WeekScrapRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: WeekScrapRepository::class)]
 class WeekScrap
 {
-    #[ORM\Id]
-    #[ORM\Column(length: 255)]
-    private string $id;
+    use UuidTrait {
+        __construct as initializeUuid;
+    }
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, options: ['default' => '0000-00-00 00:00:00'])]
     private \DateTimeImmutable $date;
@@ -32,15 +32,10 @@ class WeekScrap
 
     public function __construct()
     {
-        $this->id = Uuid::v4();
+        $this->initializeUuid();
         $this->date = new \DateTimeImmutable();
         $this->productAdded = 0;
         $this->details = [];
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     public function getStatus(): ?WeekScrapStatusEnum

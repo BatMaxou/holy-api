@@ -2,17 +2,17 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\UuidTrait;
 use App\Enum\HolyTierEnum;
 use App\Repository\RankedProductRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: RankedProductRepository::class)]
 class RankedProduct
 {
-    #[ORM\Id]
-    #[ORM\Column(length: 255)]
-    private string $id;
+    use UuidTrait {
+        __construct as initializeUuid;
+    }
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -32,15 +32,10 @@ class RankedProduct
         TierList $tierList,
         Product $product,
     ) {
-        $this->id = Uuid::v4();
+        $this->initializeUuid();
         $this->product = $product;
         $this->tierList = $tierList;
         $this->tier = HolyTierEnum::UNRANKED;
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     public function getTierList(): TierList
