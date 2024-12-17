@@ -45,6 +45,6 @@ deploy:
 	@$(php) composer install
 	@$(php) bin/console doctrine:migrations:migrate --no-interaction
 	@$(php) bin/console cache:clear
-	@make stop-consumer
-	@make launch-consumer
+	@$(MAKE) stop-consumer
+	@$(MAKE) launch-consumer
 .PHONY: deploy

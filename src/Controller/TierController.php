@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api')]
 class TierController extends AbstractController
 {
-    #[Route('/tiers', name: 'tiers')]
+    #[Route('/tiers', name: 'tiers', methods: ['GET'])]
     public function tiers(): JsonResponse
     {
         return new JsonResponse(HolyTierEnum::getOrdered());

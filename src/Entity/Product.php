@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\DTO\Interface\DTOInterface;
 use App\Repository\ProductRepository;
 use App\Entity\Interface\DTOLinkedEntityInterface;
-use Symfony\Component\Uid\Uuid;
+use App\Entity\Trait\UuidTrait;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\InheritanceType('JOINED')]
@@ -17,9 +17,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\DiscriminatorMap(['product' => Product::class, 'flavour' => Flavour::class])]
 class Product implements DTOLinkedEntityInterface
 {
-    #[ORM\Id]
-    #[ORM\Column(length: 255)]
-    private string $id;
+    use UuidTrait;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -32,16 +30,6 @@ class Product implements DTOLinkedEntityInterface
 
     #[ORM\Column(enumType: ProductRangeEnum::class)]
     private ?ProductRangeEnum $productRange = null;
-
-    public function __construct()
-    {
-        $this->id = Uuid::v4();
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
 
     public function getName(): ?string
     {

@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Service\Builder;
+namespace App\Service\Factory;
 
-use App\Entity\TierList;
 use App\Entity\RankedProduct;
+use App\Entity\TierList;
+use App\Entity\User;
 use App\Repository\ProductRepository;
-use App\Repository\TierListRepository;
 use App\Repository\RankedProductRepository;
+use App\Repository\TierListRepository;
 
-class TierListBuilder
+class TierListFactory
 {
     public function __construct(
         private readonly TierListRepository $tierListRepository,
@@ -17,14 +18,14 @@ class TierListBuilder
     ) {
     }
 
-    public function build(): void
+    public function create(User $user): void
     {
-        $build = new TierList();
-        $this->tierListRepository->save($build);
+        $new = (new TierList())->setUser($user);
+        $this->tierListRepository->save($new);
 
         $flavours = $this->productRepository->findAllFlavour();
         foreach ($flavours as $flavour) {
-            $this->rankedProductRepository->save(new RankedProduct($build, $flavour), false);
+            $this->rankedProductRepository->save(new RankedProduct($new, $flavour), false);
         }
 
         $this->rankedProductRepository->save();

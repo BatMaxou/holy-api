@@ -2,24 +2,28 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\UuidTrait;
 use App\Repository\TierListRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: TierListRepository::class)]
 class TierList
 {
-    #[ORM\Id]
-    #[ORM\Column(length: 255)]
-    private string $id;
+    use UuidTrait;
 
-    public function __construct()
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    public function getUser(): ?User
     {
-        $this->id = Uuid::v4();
+        return $this->user;
     }
 
-    public function getId(): string
+    public function setUser(?User $user): static
     {
-        return $this->id;
+        $this->user = $user;
+
+        return $this;
     }
 }

@@ -15,13 +15,14 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api')]
 class TierListController extends AbstractController
 {
-    #[Route('/tier-list/products', name: 'tier_list')]
+    #[Route('/tier-list/products', name: 'tier_list', methods: ['GET'])]
     public function tierList(
         TierListRepository $tierListRepository,
         RankedProductRepository $rankedProductRepository,
     ): JsonResponse {
-        $tierList = $tierListRepository->findOnlyOne();
-        if (null === $tierList) {
+        $user = $this->getUser();
+        $tierList = $tierListRepository->findOneBy(['user' => $user]);
+        if (null === $user || null === $tierList) {
             throw new \Exception('Tier List not found');
         }
 
@@ -42,30 +43,35 @@ class TierListController extends AbstractController
         RankedProductRepository $rankedProductRepository,
         RankedProductOrderModifier $rankedProductOrderModifier,
     ): JsonResponse {
+        $user = $this->getUser();
+        if (null === $user) {
+            throw new \LogicException('Auth not configured');
+        }
+
         $rankedProduct = $rankedProductRepository->find($id);
-        if (!$rankedProduct instanceof RankedProduct) {
+        if (!$rankedProduct instanceof RankedProduct || $rankedProduct->getTierList()->getUser() !== $user) {
             throw new \Exception('Ranked Product not found');
         }
 
-        $data = json_decode($request->getContent(), true);
-        if (!is_array($data)) {
+        $data = json_decode($request->getContent(), false);
+        if (!is_object($data)) {
             throw new \Exception('Invalid data');
         }
 
-        if (!isset($data['tier']) || !is_string($data['tier'])) {
+        if (!isset($data->tier) || !is_string($data->tier)) {
             throw new \Exception('Invalid tier');
         }
 
-        if (!isset($data['order']) || !is_int($data['order'])) {
+        if (!isset($data->order) || !is_int($data->order)) {
             throw new \Exception('Invalid order');
         }
 
-        $tier = HolyTierEnum::tryFrom($data['tier']);
+        $tier = HolyTierEnum::tryFrom($data->tier);
         if (null === $tier) {
             throw new \Exception('Invalid tier');
         }
 
-        $order = $data['order'];
+        $order = $data->order;
         if ($order <= 0) {
             throw new \Exception('Invalid order');
         }
