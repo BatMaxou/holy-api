@@ -2,16 +2,24 @@
 
 namespace DoctrineMigrations;
 
+use App\Enum\HolyTierEnum;
 use App\Enum\ProductRangeEnum;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
+use Symfony\Component\Uid\Uuid;
 
 final class Version20241229140349 extends AbstractMigration
 {
-    const NEW_MILKSHAKE_RANGE_PRODUCT = [
+    public const NEW_MILKSHAKE_RANGE_PRODUCT = [
         'Hazelnut Milkshake',
         'Banana Milkshake',
         'Vanilla Milkshake',
+    ];
+
+    public const NEW_MILKSHAKE_RANGE_FLAVOUR_MAP = [
+        self::NEW_MILKSHAKE_RANGE_PRODUCT[0] => 'Noisette',
+        self::NEW_MILKSHAKE_RANGE_PRODUCT[1] => 'Banane',
+        self::NEW_MILKSHAKE_RANGE_PRODUCT[2] => 'Vanille',
     ];
 
     public function getDescription(): string
@@ -26,9 +34,13 @@ final class Version20241229140349 extends AbstractMigration
             [...self::NEW_MILKSHAKE_RANGE_PRODUCT]
         );
 
+        $tierLists = $this->connection->fetchAllAssociative(
+            'SELECT * FROM tier_list'
+        );
+
         foreach ($products as $product) {
             $this->addSql(
-                'UPDATE product SET product_range = :product_range, image_url = :image_url WHERE id = :id',
+                'UPDATE product SET product_range = :product_range, image_url = :image_url, discr = :discr WHERE id = :id',
                 [
                     'product_range' => ProductRangeEnum::MILKSHAKE->value,
                     'image_url' => str_replace(
@@ -36,9 +48,31 @@ final class Version20241229140349 extends AbstractMigration
                         ProductRangeEnum::MILKSHAKE->value,
                         $product['image_url']
                     ),
+                    'discr' => 'flavour',
                     'id' => $product['id'],
                 ]
             );
+
+            $this->addSql(
+                'INSERT INTO flavour (id, flavour) VALUES (:id, :flavour)',
+                [
+                    'id' => $product['id'],
+                    'flavour' => self::NEW_MILKSHAKE_RANGE_FLAVOUR_MAP[$product['name']],
+                ]
+            );
+
+            foreach ($tierLists as $tierList) {
+                $this->addSql(
+                    'INSERT INTO ranked_product (id, tier_list_id, product_id, tier, order_number) VALUES (:id, :tier_list_id, :product_id, :tier, :order_number)',
+                    [
+                        'id' => (string) Uuid::v4(),
+                        'tier_list_id' => $tierList['id'],
+                        'product_id' => $product['id'],
+                        'tier' => HolyTierEnum::UNRANKED->value,
+                        'order_number' => null,
+                    ]
+                );
+            }
         }
     }
 
@@ -51,7 +85,17 @@ final class Version20241229140349 extends AbstractMigration
 
         foreach ($products as $product) {
             $this->addSql(
-                'UPDATE product SET product_range = :product_range, image_url = :image_url WHERE id = :id',
+                'DELETE FROM ranked_product WHERE product_id = :product_id',
+                ['product_id' => $product['id']]
+            );
+
+            $this->addSql(
+                'DELETE FROM flavour WHERE id = :id',
+                ['id' => $product['id']]
+            );
+
+            $this->addSql(
+                'UPDATE product SET product_range = :product_range, image_url = :image_url, discr = :discr WHERE id = :id',
                 [
                     'product_range' => ProductRangeEnum::DISCOVER_PACK->value,
                     'image_url' => str_replace(
@@ -59,6 +103,7 @@ final class Version20241229140349 extends AbstractMigration
                         ProductRangeEnum::DISCOVER_PACK->value,
                         $product['image_url']
                     ),
+                    'discr' => 'product',
                     'id' => $product['id'],
                 ]
             );
