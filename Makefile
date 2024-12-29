@@ -1,5 +1,7 @@
 DOCKER_ENABLED=1
 
+include ./.env
+include ./.env.local
 include ./.boing/makes/symfony.mk
 
 create-directories: create-uploads-directories
@@ -11,6 +13,7 @@ create-uploads-directories:
 		public/uploads/energy \
 		public/uploads/hydration \
 		public/uploads/iced-tea \
+		public/uploads/milkshake \
 		public/uploads/merch \
 		public/uploads/shaker
 .phony: create-uploads-directories
@@ -28,6 +31,7 @@ purge-uploads:
 		public/uploads/energy/* \
 		public/uploads/hydration/* \
 		public/uploads/iced-tea/* \
+		public/uploads/milkshake/* \
 		public/uploads/merch/* \
 		public/uploads/shaker/*
 .phony: purge-uploads
@@ -45,6 +49,4 @@ deploy:
 	@$(php) composer install
 	@$(php) bin/console doctrine:migrations:migrate --no-interaction
 	@$(php) bin/console cache:clear
-	@$(MAKE) stop-consumer
-	@$(MAKE) launch-consumer
 .PHONY: deploy

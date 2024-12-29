@@ -21,6 +21,7 @@ class ScraperMock implements ScraperInterface
         $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::ENERGY));
         $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::ICED_TEA));
         $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::HYDRATION));
+        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::MILKSHAKE));
         $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::SHAKER));
         $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::MERCH));
         $html .= '</body>';

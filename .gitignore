@@ -25,6 +25,11 @@
 /public/uploads/
 ###< files ###
 
+###> dump ###
+/dump/
+###< dump ###
+
+
 ###> friendsofphp/php-cs-fixer ###
 /.php-cs-fixer.php
 /.php-cs-fixer.cache

@@ -8,6 +8,7 @@ enum ProductRangeEnum: string
     case ENERGY = 'energy';
     case ICED_TEA = 'iced-tea';
     case HYDRATION = 'hydration';
+    case MILKSHAKE = 'milkshake';
     case SHAKER = 'shaker';
     case MERCH = 'merch';
 
@@ -33,6 +34,7 @@ enum ProductRangeEnum: string
             ProductRangeEnum::ENERGY,
             ProductRangeEnum::ICED_TEA,
             ProductRangeEnum::HYDRATION,
+            ProductRangeEnum::MILKSHAKE,
         ];
     }
 }

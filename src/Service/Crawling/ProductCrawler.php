@@ -153,8 +153,9 @@ class ProductCrawler
                 1 => ProductRangeEnum::ENERGY->value,
                 2 => ProductRangeEnum::ICED_TEA->value,
                 3 => ProductRangeEnum::HYDRATION->value,
-                4 => ProductRangeEnum::SHAKER->value,
-                5 => ProductRangeEnum::MERCH->value,
+                4 => ProductRangeEnum::MILKSHAKE->value,
+                5 => ProductRangeEnum::SHAKER->value,
+                6 => ProductRangeEnum::MERCH->value,
                 default => 'default',
             }),
             str_replace('\n', '', $node->html())
