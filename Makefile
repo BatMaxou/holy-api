@@ -47,6 +47,7 @@ stop-consumer:
 deploy:
 	@git pull
 	@$(composer) install
+	@$(MAKE) database-dump
 	@$(php) bin/console doctrine:migrations:migrate --no-interaction
 	@$(php) bin/console cache:clear
 .PHONY: deploy
