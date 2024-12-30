@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\UserRepository;
+use App\Service\Password\BcryptHasher;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,7 @@ class SecurityController extends AbstractController
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly BcryptHasher $bcryptHasher,
     ) {
     }
 
@@ -39,9 +41,7 @@ class SecurityController extends AbstractController
 
         $user = $this->userRepository->findOneBy(['username' => $username]);
         if ($user) {
-            // TODO
-            // if ($this->otpHasher->verify($user->getOtp(), $otp)) {
-            if ($user->getOtp() === $otp) {
+            if ($this->bcryptHasher->verify($otp, $user->getOtp() ?? '')) {
                 return new JsonResponse(['message' => 'OK']);
             }
         }
@@ -74,7 +74,7 @@ class SecurityController extends AbstractController
         $password = $data->password;
 
         $user = $this->userRepository->findOneBy(['username' => $username]);
-        if ($user && $user->getOtp() === $otp) {
+        if ($user && $this->bcryptHasher->verify($otp, $user->getOtp() ?? '')) {
             $user->setOtp(null);
             $user->setPassword($this->passwordHasher->hashPassword($user, $password));
             $this->userRepository->save($user);
