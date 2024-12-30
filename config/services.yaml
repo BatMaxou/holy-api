@@ -15,7 +15,6 @@ services:
 
     App\Command\ScrapNewProductsCommand:
         arguments:
-            # $scraper: '@App\Service\Scraping\Scraper'
             $baseUrl: '%env(HOLY_URL)%'
             $allProductsPath: '%env(HOLY_ALL_PRODUCTS_PATH)%'
 
@@ -23,6 +22,8 @@ services:
         arguments:
             $baseUrl: '%env(HOLY_URL)%'
             $allProductsPath: '%env(HOLY_ALL_PRODUCTS_PATH)%'
+
+    App\Service\Scraping\Scraper: ~
 
     App\Service\Scraping\Mock\ScraperMock:
         arguments:
@@ -32,5 +33,10 @@ services:
         arguments:
             $mockPath: '%env(MOCK_PATH)%'
 
-# when@dev:
-#     App\Service\Scraping\Scraper: '@App\Service\Scraping\Mock\ScraperMock'
+when@dev:
+    services:
+        App\Service\Scraping\Interface\ScraperInterface: '@App\Service\Scraping\Mock\ScraperMock'
+
+when@prod:
+    services:
+        App\Service\Scraping\Interface\ScraperInterface: '@App\Service\Scraping\Scraper'
