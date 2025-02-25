@@ -24,18 +24,14 @@ class WeekScrap
     #[ORM\Column(enumType: WeekScrapStatusEnum::class)]
     private ?WeekScrapStatusEnum $status = null;
 
-    /**
-     * @var array<string|null>
-     */
-    #[ORM\Column(type: Types::JSON, options: ['default' => '[]'])]
-    private array $details;
+    #[ORM\Column(type: Types::TEXT, options: ['default' => '[]'])]
+    private string $details;
 
     public function __construct()
     {
         $this->initializeUuid();
         $this->date = new \DateTimeImmutable();
         $this->productAdded = 0;
-        $this->details = [];
     }
 
     public function getStatus(): ?WeekScrapStatusEnum
@@ -79,7 +75,7 @@ class WeekScrap
      */
     public function getDetails(): array
     {
-        return $this->details;
+        return json_decode($this->details); // @phpstan-ignore return.type
     }
 
     /**
@@ -87,7 +83,11 @@ class WeekScrap
      */
     public function setDetails(array $details): static
     {
-        $this->details = $details;
+        $data = json_encode($details);
+
+        if ($data) {
+            $this->details = $data;
+        }
 
         return $this;
     }

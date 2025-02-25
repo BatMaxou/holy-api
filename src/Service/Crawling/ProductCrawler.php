@@ -59,7 +59,7 @@ class ProductCrawler
     private function getInfosFromScrapedContent(Crawler $node): ScrapProductRangeDTO
     {
         $productRangeName = $node->filter('h3')->text();
-        $productRangeGuessed = $this->productRangeGuesser->guess($productRangeName);
+        $productRangeGuessed = $this->productRangeGuesser->guess(strtolower($productRangeName));
 
         $this->currentExploredProductRange = [
             'enum' => $productRangeGuessed,
