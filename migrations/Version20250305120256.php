@@ -28,7 +28,7 @@ final class Version20250305120256 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $products = $this->connection->fetchAllAssociative(
-            'SELECT * FROM product WHERE name in (?, ?, ?)',
+            'SELECT * FROM product WHERE name in (?, ?)',
             [...self::MILKSHAKE_RANGE_PRODUCT]
         );
 
@@ -77,7 +77,7 @@ final class Version20250305120256 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $products = $this->connection->fetchAllAssociative(
-            'SELECT * FROM product WHERE name in (?, ?, ?)',
+            'SELECT * FROM product WHERE name in (?, ?)',
             [...self::MILKSHAKE_RANGE_PRODUCT]
         );
 
