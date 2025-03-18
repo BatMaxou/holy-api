@@ -25,7 +25,7 @@ class WeekScrap
     private ?WeekScrapStatusEnum $status = null;
 
     #[ORM\Column(type: Types::TEXT, options: ['default' => '[]'])]
-    private string $details;
+    private string $details = '[]';
 
     public function __construct()
     {
