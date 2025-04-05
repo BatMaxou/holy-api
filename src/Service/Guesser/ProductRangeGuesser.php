@@ -11,6 +11,9 @@ class ProductRangeGuesser
         $productRanges = ProductRangeEnum::getAll();
 
         $closest = $this->searchClosest($productRanges, $compareFrom);
+        if (null === $closest) {
+            return ProductRangeEnum::DEFAULT;
+        }
 
         return ProductRangeEnum::from($closest);
     }
@@ -18,28 +21,39 @@ class ProductRangeGuesser
     /**
      * @param string[] $productRanges
      */
-    private function searchClosest(array $productRanges, string $compareFrom): string
+    private function searchClosest(array $productRanges, string $compareFrom): ?string
     {
         $shortest = -1;
         $closest = null;
 
         foreach ($productRanges as $productRange) {
-            $lev = levenshtein($compareFrom, $productRange);
-
+            $lev = levenshtein(strtolower($compareFrom), $productRange);
             if (0 == $lev) {
                 return $productRange;
             }
 
-            if ($lev <= $shortest || $shortest < 0) {
+            if (($lev <= $shortest || $shortest < 0) && $this->contains($productRange, $compareFrom)) {
                 $closest = $productRange;
                 $shortest = $lev;
             }
         }
 
-        if (null === $closest) {
-            throw new \LogicException('No product range provided');
+        return $closest;
+    }
+
+    private function contains(string $productRange, string $compareFrom): bool
+    {
+        $composedRange = explode('-', $productRange);
+        $composedCompareFrom = explode(' ', $compareFrom);
+
+        foreach ($composedCompareFrom as $compareFromWord) {
+            foreach ($composedRange as $productRangeWord) {
+                if (str_contains(strtolower($compareFromWord), $productRangeWord)) {
+                    return true;
+                }
+            }
         }
 
-        return $closest;
+        return false;
     }
 }

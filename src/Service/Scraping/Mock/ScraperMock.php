@@ -11,8 +11,7 @@ class ScraperMock implements ScraperInterface
 
     public function __construct(
         private readonly string $mockPath,
-    ) {
-    }
+    ) {}
 
     public function scrap(string $url): string
     {
@@ -24,6 +23,7 @@ class ScraperMock implements ScraperInterface
         $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::MILKSHAKE));
         $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::SHAKER));
         $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::MERCH));
+        $html .= $this->applyMockProductHtmlPatern($this->getMockedContent(ProductRangeEnum::DEFAULT));
         $html .= '</body>';
 
         return $html;

@@ -150,6 +150,7 @@ class ProductCrawler
         file_put_contents(
             $this->applyMockPathPatern(match ($i) {
                 0 => ProductRangeEnum::DISCOVER_PACK->value,
+                0 => ProductRangeEnum::DEFAULT->value,
                 1 => ProductRangeEnum::ENERGY->value,
                 2 => ProductRangeEnum::ICED_TEA->value,
                 3 => ProductRangeEnum::HYDRATION->value,

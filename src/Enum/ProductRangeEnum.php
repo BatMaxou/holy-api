@@ -11,6 +11,7 @@ enum ProductRangeEnum: string
     case MILKSHAKE = 'milkshake';
     case SHAKER = 'shaker';
     case MERCH = 'merch';
+    case DEFAULT = 'default';
 
     /**
      * @return string[]
@@ -19,6 +20,9 @@ enum ProductRangeEnum: string
     {
         $productRanges = [];
         foreach (ProductRangeEnum::cases() as $productRange) {
+            if (ProductRangeEnum::DEFAULT === $productRange) {
+                continue;
+            }
             $productRanges[] = $productRange->value;
         }
 

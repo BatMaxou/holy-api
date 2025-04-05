@@ -101,7 +101,7 @@ class ScrapNewProductsCommand extends Command
     private function uploadImage(string $name, string $imageUrl, OutputInterface $output): ?string
     {
         $formattedName = strtolower($name);
-        $formattedName = str_replace([' ', "'"], '_', $formattedName);
+        $formattedName = str_replace([' ', "'", "/", "\\", ":"], '_', $formattedName);
         $formattedName = str_replace(['É', 'È', 'Ë', 'Ê', 'é', 'è', 'ë', 'ê'], 'e', $formattedName);
         $formattedName = str_replace(['À', 'à'], 'a', $formattedName);
         $formattedName = str_replace(['Ô', 'ô'], 'o', $formattedName);

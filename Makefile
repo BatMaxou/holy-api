@@ -15,7 +15,8 @@ create-uploads-directories:
 		public/uploads/iced-tea \
 		public/uploads/milkshake \
 		public/uploads/merch \
-		public/uploads/shaker
+		public/uploads/shaker \
+		public/uploads/default
 .phony: create-uploads-directories
 
 purge: purge-mock-templates purge-uploads
@@ -33,7 +34,8 @@ purge-uploads:
 		public/uploads/iced-tea/* \
 		public/uploads/milkshake/* \
 		public/uploads/merch/* \
-		public/uploads/shaker/*
+		public/uploads/shaker/* \
+		public/uploads/default/*
 .phony: purge-uploads
 
 launch-consumer:
